@@ -4,7 +4,7 @@ from django.core.validators import MaxLengthValidator, MaxValueValidator
 # Create your models here.
 
 class Booking(models.Model):
-    id = models.IntegerField(validators=[MaxValueValidator(limit_value=99999999999)], primary_key=True)
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255)
     no_of_guests = models.IntegerField(validators=[MaxValueValidator(limit_value=6)])
     reservation_slot = models.DateTimeField()
