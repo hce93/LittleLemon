@@ -11,7 +11,8 @@ urlpatterns = [
     path('message/', views.msg),
     path('api-token-auth/', obtain_auth_token),
     path('book/', views.BookingFormView.as_view(), name="book"),
-    path('book/success/', views.success, name='success')
+    path('book/success/', views.success, name='success'),
+    path('bookings', views.bookings, name='bookings'), 
 ]
 
 # test - d3221eb00a3375c0b4836ba011b3d9896bbce7b9

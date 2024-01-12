@@ -52,9 +52,20 @@ class BookingFormView(FormView):
     success_url = 'success/'
     
     def form_valid(self, form):
-        # This method is called when the form is successfully validated.
-        # Save the form data to the model here.
-        booking = form.save()  # This will automatically save the form data to the Booking model
+        
+        booking_instance = form.save(commit=False)
+
+        # Create the reservation_slot attribute based on reservation_date and reservation_time
+        reservation_date = form.cleaned_data['reservation_date']
+        reservation_time = datetime.strptime(form.cleaned_data['reservation_time'], '%H:%M').time()
+        reservation_slot = datetime.combine(reservation_date, reservation_time)
+
+        # Assign the calculated reservation_slot to the booking_instance
+        booking_instance.reservation_slot = reservation_slot
+
+        # Save the form instance to the model
+        booking_instance.save()
+        
         return super().form_valid(form)
 
 
@@ -71,3 +82,26 @@ def success(request):
 @permission_classes([IsAuthenticated])
 def msg(request):
     return Response({"message":"This view is protected"})
+
+@csrf_exempt
+def bookings(request):
+    # if request.method == 'POST':
+    #     data = json.load(request)
+    #     exist = Booking.objects.filter(reservation_date=data['reservation_date']).filter(
+    #         reservation_slot=data['reservation_slot']).exists()
+    #     if exist==False:
+    #         booking = Booking(
+    #             first_name=data['first_name'],
+    #             reservation_date=data['reservation_date'],
+    #             reservation_slot=data['reservation_slot'],
+    #         )
+    #         booking.save()
+    #     else:
+    #         return HttpResponse("{'error':1}", content_type='application/json')
+    
+    date = request.GET.get('date',datetime.today().date())
+    bookings = Booking.objects.filter(reservation_slot__date=date)
+
+    booking_json = serializers.serialize('json', bookings)
+
+    return HttpResponse(booking_json, content_type='application/json')
