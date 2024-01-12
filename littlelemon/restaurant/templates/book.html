@@ -29,5 +29,60 @@
     <!--End row-->
   </article>
 </section>
+<script>
+  document.querySelector('[name="reservation_date"]').addEventListener('change', function (e){
+    console.log(document.querySelector('[name="reservation_date"]').value);
+    getBookings();
+
+  })
+  document.querySelector('[name="reservation_time"]').addEventListener('change', function (e){
+    console.log(document.querySelector('[name="reservation_time"]').value);
+  })
+
+  function getBookings(){
+    let reserved_slots = [];
+
+    const date = document.querySelector('[name="reservation_date"]').value;
+    document.getElementById('today').innerHTML = date;
+
+    fetch("{% url 'bookings' %}" + "?date="+date)
+      .then(r=>r.json())
+      .then(data=>{
+
+        bookings='';
+        var timeRegex = /(\d{2}:\d{2})/;
+        
+
+        for (item of data){
+          reserved_slots.push(item.fields.reservation_slot);
+          bookings += `<p>${item.fields.name} - ${item.fields.reservation_slot.match(timeRegex)[1]} - ${item.fields.no_of_guests} Guests</p>`;
+        }
+
+        if(bookings==''){
+          bookings = "No bookings"
+        }
+        document.getElementById('bookings').innerHTML = bookings;
+
+        for(let item in reserved_slots){
+          reserved_slots[item]=reserved_slots[item].match(timeRegex)[1]
+        }
+        let slot_optioms = []
+        let label;
+        
+        for(let h=11; h<=22; h++){
+          for(let m=0; m<6; m+=3){
+            let test = h+":"+m+"0";
+            if(reserved_slots.includes(test)){
+              continue;
+            }
+            label = h+":"+m+"0"
+            slot_optioms+=`<option value="${h}:${m}0">${label}</option>`
+          }
+        }
+        document.querySelector('[name="reservation_time"]').innerHTML=slot_optioms;        
+
+      })
+  }
+</script>
 
 {% endblock %}
