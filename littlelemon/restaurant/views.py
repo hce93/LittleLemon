@@ -23,26 +23,29 @@ def sayHello(request):
 def home(request):
     return render(request, 'index.html')
 
-# def about(request):
-#     return render(request, 'about.html')
+def about(request):
+    return render(request, 'about.html')
 
 
 
 class MenuItemView(generics.ListCreateAPIView):
     queryset = Menu.objects.all()
     serializer_class = MenuSerializer
-    renderer_classes = [TemplateHTMLRenderer]
-    template_name = "menu.html"
     
-    def get(self, request, *args, **kwargs):
-        response = super().get(request, *args, **kwargs)
-        if request.accepted_renderer.format == 'html':
-            # If the client accepts HTML, render the template
-            return Response({'menu': response.data}, template_name='menu.html')
-        return response
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return render(request, 'menu.html', {'menu': serializer.data})
+    
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
     
     
 class SingleMenuItem(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes=[IsAuthenticated]
     queryset = Menu.objects.all()
     serializer_class = MenuSerializer
     
@@ -73,6 +76,7 @@ class BookingViewSet(viewsets.ModelViewSet):
     # permission_classes = [IsAuthenticated]
     queryset = Booking.objects.all()
     serializer_class = BookingSerializer
+    permission_classes=[IsAuthenticated]
     
 
 def success(request):
@@ -85,20 +89,6 @@ def msg(request):
 
 @csrf_exempt
 def bookings(request):
-    # if request.method == 'POST':
-    #     data = json.load(request)
-    #     exist = Booking.objects.filter(reservation_date=data['reservation_date']).filter(
-    #         reservation_slot=data['reservation_slot']).exists()
-    #     if exist==False:
-    #         booking = Booking(
-    #             first_name=data['first_name'],
-    #             reservation_date=data['reservation_date'],
-    #             reservation_slot=data['reservation_slot'],
-    #         )
-    #         booking.save()
-    #     else:
-    #         return HttpResponse("{'error':1}", content_type='application/json')
-    
     date = request.GET.get('date',datetime.today().date())
     bookings = Booking.objects.filter(reservation_slot__date=date)
 

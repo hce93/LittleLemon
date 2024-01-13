@@ -10,7 +10,7 @@ class Booking(models.Model):
     reservation_slot = models.DateTimeField()
 
 class Menu(models.Model):
-    id = models.IntegerField(validators=[MaxValueValidator(limit_value=99999999999)], primary_key=True)
+    id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=255) 
     price = models.DecimalField(max_digits=10,decimal_places=2) 
     inventory = models.IntegerField(validators=[MaxValueValidator(limit_value=99999)]) 

@@ -1,5 +1,6 @@
 from django import forms
 from .models import Booking
+from datetime import date
 
 
 # Code added for loading form data on the Booking page
@@ -11,7 +12,7 @@ class BookingForm(forms.ModelForm):
         widget=forms.Select(attrs={'class': 'form-control'})
     )
     reservation_date = forms.DateField(
-        widget=forms.DateInput(attrs={'type': 'date'}),
+        widget=forms.DateInput(attrs={'type': 'date'})
     )
     
     reservation_time = forms.ChoiceField(
@@ -28,4 +29,9 @@ class BookingForm(forms.ModelForm):
     class Meta:
         model = Booking
         fields = ['name', 'no_of_guests', 'reservation_date', 'reservation_time']
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Set the initial value for my_date_field
+        self.fields['reservation_date'].initial = date.today()
         
