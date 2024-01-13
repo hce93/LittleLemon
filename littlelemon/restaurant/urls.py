@@ -16,4 +16,7 @@ urlpatterns = [
     path('about/', views.about, name="about"),
 ]
 
-# test - d3221eb00a3375c0b4836ba011b3d9896bbce7b9
+
+# newUser
+# oranges123
+# 29229715acebcc005fc3a4b10e6c3274d119e9f7
