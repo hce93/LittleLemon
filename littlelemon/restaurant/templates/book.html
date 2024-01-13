@@ -30,13 +30,11 @@
   </article>
 </section>
 <script>
+  getBookings();
   document.querySelector('[name="reservation_date"]').addEventListener('change', function (e){
     console.log(document.querySelector('[name="reservation_date"]').value);
     getBookings();
 
-  })
-  document.querySelector('[name="reservation_time"]').addEventListener('change', function (e){
-    console.log(document.querySelector('[name="reservation_time"]').value);
   })
 
   function getBookings(){
@@ -69,7 +67,7 @@
         let slot_optioms = []
         let label;
         
-        for(let h=11; h<=22; h++){
+        for(let h=11; h<22; h++){
           for(let m=0; m<6; m+=3){
             let test = h+":"+m+"0";
             if(reserved_slots.includes(test)){

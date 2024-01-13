@@ -4,15 +4,17 @@
 <h1>Menu</h1>
 <!--Begin col-->
 <div class="column">
-    <p>Menu Items should load below:</p>
     {% for item in menu %}
     <p>
-        <a href="{% url 'menu_item' pk=item.pk %}">
+        <p>
             {{ item.title }}
-            </a>
+        </p>
         <span class="menu-price">
-            ${{ item.price }}.00
+            Price: ${{ item.price }}
         </span>
+        <span class="menu-price">
+            Inventory: {{item.inventory}}
+        </spa>
     </p>
     {% endfor %}
 </div>
