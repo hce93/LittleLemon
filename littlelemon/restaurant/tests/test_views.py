@@ -3,6 +3,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 from django.contrib.auth.models import User
+import json
 from restaurant import models
 from restaurant import serializers
 
@@ -25,8 +26,11 @@ class MenuViewTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         
         serialized_menu_item = serializers.MenuSerializer(instance = self.menu_item).data
+        # response_data = json.loads(response.content.decode('utf-8'))
+        print(serialized_menu_item)
+        # print(response.data)
         # test GET request
-        # self.assertIn(serialized_menu_item, response.data)
+        self.assertContains(response, "Burger")
         
         
     def test_create_menu_item(self):
