@@ -14,6 +14,7 @@ urlpatterns = [
     path('book/success/', views.success, name='success'),
     path('bookings', views.bookings, name='bookings'), 
     path('about/', views.about, name="about"),
+    path('managers/', views.AddManager.as_view(), name='manager')
 ]
 
 
