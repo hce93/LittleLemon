@@ -111,7 +111,7 @@ def msg(request):
 @csrf_exempt
 def bookings(request):
     date = request.GET.get('date',datetime.today().date())
-    bookings = Booking.objects.filter(reservation_slot__date=date)
+    bookings = Booking.objects.filter(reservation_slot__date=date).order_by('reservation_slot')
 
     booking_json = serializers.serialize('json', bookings)
 
