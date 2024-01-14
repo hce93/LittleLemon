@@ -9,10 +9,12 @@ from datetime import datetime
 from django.core import serializers
 from django.views.generic.edit import FormView
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.models import User, Group
 import json
-from .serializers import MenuSerializer, BookingSerializer
+from .serializers import MenuSerializer, BookingSerializer, ManagerSerializer
 from .models import Menu, Booking
 from .forms import BookingForm
+from .permissions import ManagerPermission
 
 def sayHello(request):
  return HttpResponse('Hello World')
@@ -45,7 +47,7 @@ class MenuItemView(generics.ListCreateAPIView):
     
     
 class SingleMenuItem(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes=[IsAuthenticated]
+    permission_classes=[ManagerPermission]
     queryset = Menu.objects.all()
     serializer_class = MenuSerializer
     
@@ -76,11 +78,30 @@ class BookingViewSet(viewsets.ModelViewSet):
     # permission_classes = [IsAuthenticated]
     queryset = Booking.objects.all()
     serializer_class = BookingSerializer
-    permission_classes=[IsAuthenticated]
+    permission_classes=[ManagerPermission]
     
 
 def success(request):
     return render(request, 'success.html')
+
+class AddManager(generics.ListAPIView):
+    permission_classes=[ManagerPermission]
+    queryset = User.objects.filter(groups__name="Manager")
+    serializer_class = ManagerSerializer
+    
+    def post(self, request, *args, **kwargs):
+        user = User.objects.all().get(username = request.data.get('username'))
+        manager_group = Group.objects.get(name="Manager")
+        user.groups.add(manager_group)
+        user.save()
+        return Response(self.get_serializer(user).data)
+    
+    def destroy(self, request, *args, **kwargs):
+        manager_group = Group.objects.get(name="Manager")
+        user = User.objects.all().get(username = request.data.get('username'))
+        user.groups.remove(manager_group)
+        user.save()
+        return Response(self.get_serializer(user).data)
     
 @api_view()
 @permission_classes([IsAuthenticated])
